@@ -38,7 +38,7 @@ class SystemTagsByIdCollectionTest extends \Test\TestCase {
 	 */
 	private $user;
 
-	protected function setUp() {
+	protected function setUp(): void {
 		parent::setUp();
 
 		$this->tagManager = $this->createMock('\OCP\SystemTag\ISystemTagManager');
