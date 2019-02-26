@@ -162,6 +162,13 @@ trait BasicStructure {
 	private $ocsApiVersion = 1;
 
 	/**
+	 * The username used for the last request.
+	 *
+	 * @var string
+	 */
+	private $lastRequestUsername = null;
+
+	/**
 	 * @var ResponseInterface
 	 */
 	private $response = null;
@@ -663,6 +670,22 @@ trait BasicStructure {
 	 */
 	public function getCurrentUser() {
 		return $this->currentUser;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLastRequestUsername() {
+		return $this->lastRequestUsername;
+	}
+
+	/**
+	 * @param string $user
+	 *
+	 * @return void
+	 */
+	public function setLastRequestUsername($user) {
+		$this->lastRequestUsername = $user;
 	}
 
 	/**
