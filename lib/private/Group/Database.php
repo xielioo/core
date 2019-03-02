@@ -234,7 +234,13 @@ class Database extends \OC\Group\Backend {
 		$parameters = [];
 		$searchLike = '';
 		if ($search !== '') {
-			$parameters[] = '%' . $search . '%';
+			$search = $this->dbConn->escapeLikeParameter($search);
+			$allowMedialSearches = \OC::$server->getConfig()->getSystemValue("groups.enable_medial_search", true);
+			if ($allowMedialSearches) {
+				$parameters[] = '%' . $search . '%';
+			} else {
+				$parameters[] = $search . '%';
+			}
 			$searchLike = ' WHERE LOWER(`gid`) LIKE LOWER(?)';
 		}
 
@@ -287,7 +293,13 @@ class Database extends \OC\Group\Backend {
 		$parameters = [$gid];
 		$searchLike = '';
 		if ($search !== '') {
-			$parameters[] = '%' . $this->dbConn->escapeLikeParameter($search) . '%';
+			$search = \OC::$server->getDatabaseConnection()->escapeLikeParameter($search);
+			$allowMedialSearches = \OC::$server->getConfig()->getSystemValue("accounts.enable_medial_search", true);
+			if ($allowMedialSearches) {
+				$parameters[] = '%' . $search . '%';
+			} else {
+				$parameters[] = $search . '%';
+			}
 			$searchLike = ' AND `uid` LIKE ?';
 		}
 
@@ -313,7 +325,13 @@ class Database extends \OC\Group\Backend {
 		$parameters = [$gid];
 		$searchLike = '';
 		if ($search !== '') {
-			$parameters[] = '%' . $this->dbConn->escapeLikeParameter($search) . '%';
+			$search = \OC::$server->getDatabaseConnection()->escapeLikeParameter($search);
+			$allowMedialSearches = \OC::$server->getConfig()->getSystemValue("accounts.enable_medial_search", true);
+			if ($allowMedialSearches) {
+				$parameters[] = '%' . $search . '%';
+			} else {
+				$parameters[] = $search . '%';
+			}
 			$searchLike = ' AND `uid` LIKE ?';
 		}
 
