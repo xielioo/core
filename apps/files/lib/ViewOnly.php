@@ -36,17 +36,23 @@ class ViewOnly {
 	 * @return bool
 	 */
 	public function check($pathsToCheck) {
+		// If any of elements cannot be downloaded, prevent whole download
+		$canDownload = true;
 		foreach ($pathsToCheck as $file) {
 			if (Filesystem::is_file($file)) {
 				// access to filecache is expensive in the loop
 				$fileInfo = Filesystem::getFileInfo($file);
-				return $this->checkFileInfo($fileInfo);
+				if (!$this->checkFileInfo($fileInfo)){
+					$canDownload = false;
+				}
 			} elseif (Filesystem::is_dir($file)) {
 				// get directory content is rather cheap query
-				return $this->dirRecursiveCheck($file);
+				if (!$this->dirRecursiveCheck($file)) {
+					$canDownload = false;
+				}
 			}
 		}
-		return true;
+		return $canDownload;
 	}
 
 	/**
@@ -54,18 +60,22 @@ class ViewOnly {
 	 * @return bool
 	 */
 	private function dirRecursiveCheck($dir) {
+		// If any of elements cannot be downloaded, prevent whole download
+		$canDownload = true;
 		$files = Filesystem::getDirectoryContent($dir);
 		foreach ($files as $file) {
 			$filename = $file->getName();
 			if ($file->getType() === FileInfo::TYPE_FILE) {
-				return $this->checkFileInfo($file);
+				if (!$this->checkFileInfo($file)) {
+					$canDownload = false;
+				}
 			} elseif ($file->getType() === FileInfo::TYPE_FOLDER) {
 				$file = $dir . '/' . $filename;
 				return $this->dirRecursiveCheck($file);
 			}
 		}
 
-		return true;
+		return $canDownload;
 	}
 
 	/**
@@ -85,7 +95,7 @@ class ViewOnly {
 
 		// Check if read-only and on whether permission can download is both set and disabled.
 		$canDownload = $share->getAttributes()->getAttribute('core', 'can-download');
-		if (!$fileInfo->isUpdateable() && $canDownload !== null && !$canDownload) {
+		if ($canDownload !== null && !$canDownload) {
 			return false;
 		}
 		return true;

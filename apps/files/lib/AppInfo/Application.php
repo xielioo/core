@@ -114,19 +114,17 @@ class Application extends App {
 				$pathsToCheck[] = $dir . '/' . $files;
 			}
 
-			$event->setArgument(
-				'run',
-				$viewOnlyHandler->check($pathsToCheck)
-			);
+			if (!$viewOnlyHandler->check($pathsToCheck)) {
+				$event->setArgument('errorMessage', 'File, folder or one of the files inside the folder cannot be downloaded');
+			}
 		});
 
 		$dispatcher->addListener('file.beforeGetDirect', function (GenericEvent $event) use ($viewOnlyHandler) {
 			$pathsToCheck[] = $event->getArgument('path');
 
-			$event->setArgument(
-				'run',
-				$viewOnlyHandler->check($pathsToCheck)
-			);
+			if (!$viewOnlyHandler->check($pathsToCheck)) {
+				$event->setArgument('errorMessage', 'File, folder or one of the files inside the folder cannot be downloaded');
+			}
 		});
 	}
 }
